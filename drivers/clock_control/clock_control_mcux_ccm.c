@@ -191,6 +191,12 @@ static int mcux_ccm_on(const struct device *dev,
 		CLOCK_EnableClock(ENET_CLOCK);
 		return 0;
 #endif
+
+#if defined(CONFIG_NXP_MCUX_EHCI) && defined(CONFIG_NXP_MCUX_EHCI)
+	case IMX_CCM_LPUART1_CLK:
+		CLOCK_EnableClock(lpuart_clocks[instance]);
+		return 0;
+#endif
 	default:
 		(void)instance;
 		return 0;
