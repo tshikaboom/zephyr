@@ -64,6 +64,12 @@ static void soc_rdc_init(void)
 	RDC_SetPeriphAccessConfig(rdc_inst, &periphConfig);
 #endif
 
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(zephyr_udc0)) && DT_NODE_HAS_PROP(DT_NODELABEL(zephyr_udc0), rdc)
+	periphConfig.periph = kRDC_Periph_USB1;
+	periphConfig.policy = RDC_DT_VAL(zephyr_udc0);
+	RDC_SetPeriphAccessConfig(rdc_inst, &periphConfig);
+#endif
+
 #if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(wdog1)) && DT_NODE_HAS_PROP(DT_NODELABEL(wdog1), rdc)
 	periphConfig.periph = kRDC_Periph_WDOG1;
 	periphConfig.policy = RDC_DT_VAL(wdog1);
