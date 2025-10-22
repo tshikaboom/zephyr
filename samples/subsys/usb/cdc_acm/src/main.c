@@ -13,6 +13,9 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/ring_buffer.h>
 
+#include <zephyr/drivers/watchdog.h>
+#include <fsl_wdog.h>
+
 #include <zephyr/usb/usbd.h>
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(cdc_acm_echo, LOG_LEVEL_INF);
@@ -158,23 +161,53 @@ static void interrupt_handler(const struct device *dev, void *user_data)
 	}
 }
 
+const struct device *wdt = DEVICE_DT_GET(DT_NODELABEL(wdog1));
+
+void watchdog_feed() { wdt_feed(wdt, 0); }
+
+void wdt_callback(const struct device *dev, int channel_id) {
+    watchdog_feed();  // Have to feed once, otherwise we'll reset immediately.
+    printk("\nWDT_TRIGGERED\n");
+    sys_reset();
+}
+
+void sys_reset() {
+
+    printk("\nSYS_RESET\n");
+    k_busy_wait(1000);
+
+    barrier_dsync_fence_full();  // Flush all pending writes to memory.
+
+    WDOG_TriggerSystemSoftwareReset((WDOG_Type *)WDOG1_BASE);
+}
+
+
 int main(void)
 {
 	int ret;
+
+	int handle = wdt_install_timeout(wdt, &(struct wdt_timeout_cfg){
+		.window = { .min = 0, .max = 5000 },
+		.callback = wdt_callback,
+	});
+	printk("wdog handle %d\n", handle);
+	wdt_setup(wdt, WDT_OPT_PAUSE_HALTED_BY_DBG);
 
 	if (!device_is_ready(uart_dev)) {
 		LOG_ERR("CDC ACM device not ready");
 		return 0;
 	}
 
+	printk("Hello\n");
 	ret = enable_usb_device_next();
 	if (ret != 0) {
 		LOG_ERR("Failed to enable USB device support");
 		return 0;
 	}
 
+	printk("Hello2\n");
 	ring_buf_init(&ringbuf, sizeof(ring_buffer), ring_buffer);
-
+	printk("Hello3\n");
 	LOG_INF("Wait for DTR");
 	k_sem_take(&dtr_sem, K_FOREVER);
 	LOG_INF("DTR set");
