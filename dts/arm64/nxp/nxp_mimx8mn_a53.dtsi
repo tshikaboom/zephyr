@@ -308,8 +308,8 @@
 //		clocks = <&ccm IMX8MN_CLK_USB1_CTRL_ROOT 0 0>;
 		clocks = <&usbclk>;
 		num-bidir-endpoints = <8>;
-//		rdc = <RDC_DOMAIN_PERM(A53_DOMAIN_ID, RDC_DOMAIN_PERM_RW)>;
-		status = "disabled";
+		rdc = <RDC_DOMAIN_PERM(A53_DOMAIN_ID, RDC_DOMAIN_PERM_RW)>;
+		status = "okay";
 	};
 
 	enet: enet@30be0000 {

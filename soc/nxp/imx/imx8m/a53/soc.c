@@ -119,6 +119,15 @@ __weak void soc_clock_init(void)
 #if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(wdog1))
 	CLOCK_SetRootMux(kCLOCK_RootWdog, kCLOCK_WdogRootmuxSysPll1Div5);
 	CLOCK_EnableClock(kCLOCK_Wdog1);
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(zephyr_udc0))
+/*
+	CLOCK_UpdateRoot(kCLOCK_RootUsbCoreRef, kCLOCK_UsbCoreRefRootmuxOsc24MClk, 1U, 1U);
+	CLOCK_UpdateRoot(kCLOCK_RootUsbPhyRef, kCLOCK_UsbPhyRefRootmuxSysPll1Div8Clk, 1U, 1U);
+	CLOCK_UpdateRoot(kCLOCK_RootUsb, kCLOCK_UsbRootmuxSysPll2Div2Clk, 1U, 1U);
+	CLOCK_EnableClock(kCLOCK_Usb);
+	CLOCK_EnableClock(kCLOCK_UsbCoreRef);
+	CLOCK_EnableClock(kCLOCK_UsbPhyRef);
+*/
 #endif
 }
 
