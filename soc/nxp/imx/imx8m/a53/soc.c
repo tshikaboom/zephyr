@@ -63,6 +63,25 @@ static void soc_rdc_init(void)
 	periphConfig.policy = RDC_DT_VAL(flexcan2);
 	RDC_SetPeriphAccessConfig(rdc_inst, &periphConfig);
 #endif
+
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(wdog1)) && DT_NODE_HAS_PROP(DT_NODELABEL(wdog1), rdc)
+	periphConfig.periph = kRDC_Periph_WDOG1;
+	periphConfig.policy = RDC_DT_VAL(wdog1);
+	RDC_SetPeriphAccessConfig(rdc_inst, &periphConfig);
+#endif
+
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(wdog2)) && DT_NODE_HAS_PROP(DT_NODELABEL(wdog2), rdc)
+	periphConfig.periph = kRDC_Periph_WDOG2;
+	periphConfig.policy = RDC_DT_VAL(wdog2);
+	RDC_SetPeriphAccessConfig(rdc_inst, &periphConfig);
+#endif
+
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(wdog3)) && DT_NODE_HAS_PROP(DT_NODELABEL(wdog3), rdc)
+	periphConfig.periph = kRDC_Periph_WDOG3;
+	periphConfig.policy = RDC_DT_VAL(wdog3);
+	RDC_SetPeriphAccessConfig(rdc_inst, &periphConfig);
+#endif
+
 }
 #else
 
@@ -90,6 +109,10 @@ __weak void soc_clock_init(void)
 	CLOCK_SetRootMux(kCLOCK_RootFlexCan2, kCLOCK_FlexCanRootmuxSysPll1);
 	/* Set root clock to 800MHZ / 10 = 80MHZ */
 	CLOCK_SetRootDivider(kCLOCK_RootFlexCan2, 2U, 5U);
+#endif
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(wdog1))
+	CLOCK_SetRootMux(kCLOCK_RootWdog, kCLOCK_WdogRootmuxSysPll1Div5);
+	CLOCK_EnableClock(kCLOCK_Wdog1);
 #endif
 }
 

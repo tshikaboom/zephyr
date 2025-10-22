@@ -42,6 +42,9 @@ static const struct arm_mmu_region mmu_regions[] = {
 
 	MMU_REGION_DT_COMPAT_FOREACH_FLAT_ENTRY(nxp_imx_iuart,
 				  (MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_NS))
+
+	MMU_REGION_DT_COMPAT_FOREACH_FLAT_ENTRY(nxp_imx_wdog,
+				  (MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_NS))
 };
 
 const struct arm_mmu_config mmu_config = {
