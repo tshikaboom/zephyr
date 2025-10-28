@@ -270,7 +270,7 @@
 		interrupt-names = "wdog1";
 		interrupt-parent = <&gic>;
 		rdc = <RDC_DOMAIN_PERM(A53_DOMAIN_ID, RDC_DOMAIN_PERM_RW)>;
-		status = "disabled";
+		status = "okay";
 	};
 
 	wdog2: wdog@30290000 {
