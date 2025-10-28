@@ -13,8 +13,10 @@
 #include <zephyr/kernel.h>
 #include <zephyr/sys/ring_buffer.h>
 
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(wdog1))
 #include <zephyr/drivers/watchdog.h>
 #include <fsl_wdog.h>
+#endif
 
 #include <zephyr/usb/usbd.h>
 #include <zephyr/logging/log.h>
@@ -160,7 +162,7 @@ static void interrupt_handler(const struct device *dev, void *user_data)
 		}
 	}
 }
-
+#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(wdog1))
 const struct device *wdt = DEVICE_DT_GET(DT_NODELABEL(wdog1));
 
 void watchdog_feed() { wdt_feed(wdt, 0); }
@@ -180,18 +182,21 @@ void sys_reset() {
 
     WDOG_TriggerSystemSoftwareReset((WDOG_Type *)WDOG1_BASE);
 }
-
+#endif
 
 int main(void)
 {
 	int ret;
 
+	printk("hello from main!\n");
+	#if DT_NODE_HAS_STATUS_OKAY(DT_NODELABEL(wdog1))
 	int handle = wdt_install_timeout(wdt, &(struct wdt_timeout_cfg){
 		.window = { .min = 0, .max = 5000 },
 		.callback = wdt_callback,
 	});
 	printk("wdog handle %d\n", handle);
 	wdt_setup(wdt, WDT_OPT_PAUSE_HALTED_BY_DBG);
+	#endif
 
 	if (!device_is_ready(uart_dev)) {
 		LOG_ERR("CDC ACM device not ready");
