@@ -39,11 +39,17 @@ static const struct arm_mmu_region mmu_regions[] = {
 			      DT_REG_ADDR(DT_NODELABEL(rdc)),
 			      DT_REG_SIZE(DT_NODELABEL(rdc)),
 			      MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_NS),
+/*
+	MMU_REGION_FLAT_ENTRY("usb",
+				  DT_REG_ADDR(DT_NODELABEL(zephyr_udc0)),
+				  DT_REG_SIZE(DT_NODELABEL(zephyr_udc0)),
+				  MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_NS),
+*/
+	MMU_REGION_DT_COMPAT_FOREACH_FLAT_ENTRY(nxp_ehci,
+				(MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_NS))
+
 
 	MMU_REGION_DT_COMPAT_FOREACH_FLAT_ENTRY(nxp_imx_iuart,
-				  (MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_NS))
-
-	MMU_REGION_DT_COMPAT_FOREACH_FLAT_ENTRY(nxp_ehci,
 				  (MT_DEVICE_nGnRnE | MT_P_RW_U_NA | MT_NS))
 
 	MMU_REGION_DT_COMPAT_FOREACH_FLAT_ENTRY(nxp_imx_wdog,
