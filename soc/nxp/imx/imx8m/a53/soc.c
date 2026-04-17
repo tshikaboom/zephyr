@@ -125,7 +125,7 @@ __weak void soc_clock_init(void)
 	CLOCK_SetRootMux(kCLOCK_RootUsbCoreRef, kCLOCK_UsbCoreRefRootmuxSysPll1Div8);
 	CLOCK_SetRootMux(kCLOCK_RootUsb, kCLOCK_UsbRootmuxSysPll2Div2);
 
-//	CLOCK_EnableClock(kCLOCK_UsbCoreRef);
+	CLOCK_EnableClock(kCLOCK_UsbCoreRef);
 	CLOCK_EnableClock(kCLOCK_UsbPhyRef);
 	CLOCK_EnableClock(kCLOCK_Usb);
 #endif

@@ -27,6 +27,7 @@ if(CONFIG_SOC_MIMX8ML8_ADSP)
 endif()
 
 if(CONFIG_SOC_MIMX8ML8_A53 OR CONFIG_SOC_MIMX8MM6_A53 OR CONFIG_SOC_MIMX8MN6_A53)
+#  zephyr_compile_definitions_ifdef(CONFIG_UDC_DRIVER USB_DEVICE_CONFIG_BUFFER_PROPERTY_CACHEABLE=1)
   zephyr_include_directories(.)
   zephyr_include_directories(a53)
 
@@ -34,6 +35,8 @@ if(CONFIG_SOC_MIMX8ML8_A53 OR CONFIG_SOC_MIMX8MM6_A53 OR CONFIG_SOC_MIMX8MN6_A53
     a53/pinctrl_soc.h
     a53/soc.c
   )
+
+  zephyr_linker_sources_ifdef(CONFIG_UDC_DRIVER SECTIONS usb.ld)
 
   zephyr_sources_ifdef(CONFIG_ARM_MMU a53/mmu_regions.c)
 

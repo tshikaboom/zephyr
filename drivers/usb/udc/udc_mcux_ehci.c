@@ -138,6 +138,11 @@ static int udc_mcux_ep_feed(const struct device *dev,
 		return -EBUSY;
 	}
 
+	if ((cfg->addr & 0x7F) != 0x00) {
+    LOG_INF("mcux_ep_enqueue: ep 0x%02x len %u status %d",
+            cfg->addr, buf->len, status);
+}
+
 	return (status == kStatus_USB_Success ? 0 : -EIO);
 }
 
@@ -175,7 +180,7 @@ static int udc_mcux_ctrl_feed_dout(const struct device *dev,
 	k_fifo_put(&cfg->fifo, buf);
 
 	ret = udc_mcux_ep_feed(dev, cfg, buf);
-
+	printk("%s: udc_mcux_ep_feed returned %d\n", __func__, ret);
 	if (ret) {
 		net_buf_unref(buf);
 		return ret;
@@ -189,7 +194,7 @@ static int udc_mcux_handler_setup(const struct device *dev, struct usb_setup_pac
 	int err;
 	struct net_buf *buf;
 
-	LOG_DBG("setup packet");
+	LOG_INF("setup packet");
 	buf = udc_ctrl_alloc(dev, USB_CONTROL_EP_OUT,
 			sizeof(struct usb_setup_packet));
 	if (buf == NULL) {
@@ -218,7 +223,7 @@ static int udc_mcux_handler_setup(const struct device *dev, struct usb_setup_pac
 
 	if (udc_ctrl_stage_is_data_out(dev)) {
 		/*  Allocate and feed buffer for data OUT stage */
-		LOG_DBG("s:%p|feed for -out-", buf);
+		LOG_INF("s:%p|feed for -out-", buf);
 		err = udc_mcux_ctrl_feed_dout(dev, udc_data_stage_length(buf));
 		if (err == -ENOMEM) {
 			err = udc_submit_ep_event(dev, buf, err);
@@ -582,7 +587,7 @@ static int udc_mcux_ep_enqueue(const struct device *dev,
 {
 	udc_buf_put(cfg, buf);
 	if (cfg->stat.halted) {
-		LOG_DBG("ep 0x%02x halted", cfg->addr);
+		LOG_INF("ep 0x%02x halted", cfg->addr);
 		return 0;
 	}
 
@@ -624,9 +629,9 @@ static int udc_mcux_ep_clear_halt(const struct device *dev,
 static int udc_mcux_ep_enable(const struct device *dev,
 			      struct udc_ep_config *const cfg)
 {
-	usb_device_endpoint_init_struct_t ep_init;
 
-	LOG_DBG("Enable ep 0x%02x", cfg->addr);
+	usb_device_endpoint_init_struct_t ep_init;
+	LOG_INF("Enable ep 0x%02x", cfg->addr);
 
 	ep_init.zlt             = 0U;
 	ep_init.interval        = cfg->interval;
@@ -657,7 +662,7 @@ static int udc_mcux_ep_enable(const struct device *dev,
 static int udc_mcux_ep_disable(const struct device *dev,
 			       struct udc_ep_config *const cfg)
 {
-	LOG_DBG("Disable ep 0x%02x", cfg->addr);
+	LOG_INF("Disable ep 0x%02x", cfg->addr);
 
 	return udc_mcux_control(dev, kUSB_DeviceControlEndpointDeinit, &cfg->addr);
 }
@@ -717,7 +722,7 @@ static int udc_mcux_init(const struct device *dev)
 	/* enable USB interrupt */
 	config->irq_enable_func(dev);
 
-	LOG_DBG("Initialized USB controller %x", (uint32_t)config->base);
+	LOG_INF("Initialized USB controller %x", (uint32_t)config->base);
 
 	return 0;
 }

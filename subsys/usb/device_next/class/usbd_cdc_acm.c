@@ -305,6 +305,7 @@ static int usbd_cdc_acm_request(struct usbd_class_data *const c_data,
 	}
 
 	if (bi->ep == cdc_acm_get_bulk_out(c_data)) {
+		printk("CDC ACM bulk OUT complete, len=%d\n", buf->len);
 		/* RX transfer completion */
 		size_t done;
 
@@ -687,6 +688,8 @@ static void cdc_acm_rx_fifo_handler(struct k_work *work)
 	struct net_buf *buf;
 	int ret;
 
+	LOG_DBG("cdc_acm_rx_fifo_handler");
+
 	data = CONTAINER_OF(work, struct cdc_acm_uart_data, rx_fifo_work);
 	cfg = data->dev->config;
 	c_data = cfg->c_data;
@@ -709,6 +712,7 @@ static void cdc_acm_rx_fifo_handler(struct k_work *work)
 
 	buf = cdc_acm_buf_alloc(c_data, cdc_acm_get_bulk_out(c_data));
 	if (buf == NULL) {
+		LOG_DBG("bad! buf null! return!");
 		return;
 	}
 

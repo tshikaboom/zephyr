@@ -106,6 +106,7 @@ static void interrupt_handler(const struct device *dev, void *user_data)
 {
 	ARG_UNUSED(user_data);
 
+	printk("usbirq\n");
 	while (uart_irq_update(dev) && uart_irq_is_pending(dev)) {
 		if (!rx_throttled && uart_irq_rx_ready(dev)) {
 			int recv_len, rb_len;
@@ -195,7 +196,7 @@ int main(void)
 		.callback = wdt_callback,
 	});
 	printk("wdog handle %d\n", handle);
-	wdt_setup(wdt, WDT_OPT_PAUSE_HALTED_BY_DBG);
+//	wdt_setup(wdt, WDT_OPT_PAUSE_HALTED_BY_DBG);
 	#endif
 
 	if (!device_is_ready(uart_dev)) {
@@ -216,6 +217,7 @@ int main(void)
 	LOG_INF("Wait for DTR");
 	k_sem_take(&dtr_sem, K_FOREVER);
 	LOG_INF("DTR set");
+	printk("dev name %s\n", uart_dev->name);
 
 	/* They are optional, we use them to test the interrupt endpoint */
 	ret = uart_line_ctrl_set(uart_dev, UART_LINE_CTRL_DCD, 1);
@@ -223,17 +225,23 @@ int main(void)
 		LOG_WRN("Failed to set DCD, ret code %d", ret);
 	}
 
+	printk("setting linectrl\n");
+
 	ret = uart_line_ctrl_set(uart_dev, UART_LINE_CTRL_DSR, 1);
 	if (ret) {
 		LOG_WRN("Failed to set DSR, ret code %d", ret);
 	}
 
+	printk("sleep\n");
+
 	/* Wait 100ms for the host to do all settings */
 	k_msleep(100);
 
+	printk("setting irqhandler\n");
 	uart_irq_callback_set(uart_dev, interrupt_handler);
 	/* Enable rx interrupts */
 	uart_irq_rx_enable(uart_dev);
 
+	printk("enabled rx\n");
 	return 0;
 }

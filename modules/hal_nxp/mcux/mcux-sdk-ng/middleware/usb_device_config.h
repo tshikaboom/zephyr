@@ -117,6 +117,8 @@ BUILD_ASSERT(NUM_INSTS <= 1, "Only one USB device supported");
 #endif
 #endif
 
+#define USB_DEVICE_CONFIG_BUFFER_PROPERTY_CACHEABLE (1U)
+
 /* TODO: After Kconfig item that enable/disable sof is added,
  * use the Kconfig item to control this macro.
  */
